@@ -4,7 +4,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Typography from "@mui/material/Typography";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+
 import axios from "axios";
 import Meal from "./Meal";
 export default function Review() {
@@ -14,22 +15,30 @@ export default function Review() {
 
   const [expanded, setExpanded] = useState(false);
   const [mealData, setMealData] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    if (selectedCalorieGoal) {
+    if (selectedCalorieGoal && !mealData) {
       fetchMealPlanWeek();
       console.log(selectedCalorieGoal);
     }
-  }, []);
+  }, [selectedCalorieGoal, mealData]);
 
   const fetchMealPlanWeek = async () => {
+    if (isFetching) return;
+
+    setIsFetching(true);
     try {
       const response = await axios.get(
-        `https://api.spoonacular.com/mealplanner/generate?apiKey=e6d8ceb34d4c491592c77155c463f51a&timeFrame=week&targetCalories=${selectedCalorieGoal}`,
-        {}
+        `https://api.spoonacular.com/mealplanner/generate?apiKey=d8e3ad4dee35418a928f00aae7ec7dce&timeFrame=week&targetCalories=${selectedCalorieGoal}`
       );
       setMealData(response.data);
+      dispatch({ type: "SET_MEAL_DATA", payload: response.data });
     } catch (error) {
       console.error("Error fetching meal plan:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 

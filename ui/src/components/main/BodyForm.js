@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import Paper from "@mui/material/Paper";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 
-import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -20,17 +15,12 @@ import {
   updateFormData,
   updateCalorieData,
 } from "../../redux/actions/formActions";
-import { updateUserData } from "../../redux/actions/userActions"; // ьImport updateCalorieData
+import { updateUserData } from "../../redux/actions/userActions";
 import { setCalculatedFlag } from "../../redux/actions/formActions";
-
-import axios from "axios";
-import { Calories } from "../../requests";
 
 export default function BodyForm() {
   const user = useSelector((state) => state.user.user);
 
-  // Проверка дали user е дефиниран
-  const email = user?.email || "";
   const username = user?.username || "";
   const [calText, setCalText] = useState(false);
   const [calculatedCalories, setCalculatedCalories] = useState(0);
@@ -46,14 +36,6 @@ export default function BodyForm() {
     activitylevel: "",
   });
 
-  const activitylevelMapping = {
-    sedentary: "level_1",
-    light: "level_2",
-    moderate: "level_3",
-    active: "level_4",
-    extra: "level_5",
-  };
-
   useEffect(() => {
     if (formDataFromStore) {
       setFormData(formDataFromStore);
@@ -68,7 +50,7 @@ export default function BodyForm() {
       ? 10 * weight + 6.25 * height - 5 * age + 5
       : 10 * weight + 6.25 * height - 5 * age - 161;
 
-    let activityFactor = 1.2; // стойност по подразбиране
+    let activityFactor = 1.2;
     switch (activitylevel) {
       case "level_1":
         activityFactor = 1.2;
@@ -95,9 +77,8 @@ export default function BodyForm() {
     return maintainCalories;
   }
 
-  // Във вашия код може да замените извикването на API с новата функция:
   const handleSubmit = (event) => {
-    event.preventDefault(); // Спира презареждането на страницата
+    event.preventDefault();
 
     // Проверка дали всички необходими полета са попълнени
     if (
@@ -120,7 +101,6 @@ export default function BodyForm() {
       "Mild weight loss": { calory: result - 200 },
     };
 
-    // Запазване на резултата в Redux Store
     dispatch(
       updateUserData({
         ...formData,
@@ -128,11 +108,10 @@ export default function BodyForm() {
       })
     );
 
-    // Актуализиране на локалното състояние
-    setCalculatedCalories(result); // Задава изчислените калории за показване
+    setCalculatedCalories(result);
     dispatch(updateCalorieData(result));
     dispatch(setCalculatedFlag(true));
-    setCalText(true); // Показва текста за калориите
+    setCalText(true);
   };
 
   // Reset the flag if any form data changes
@@ -151,7 +130,7 @@ export default function BodyForm() {
   return (
     <form onSubmit={handleSubmit}>
       <Typography variant="h6" gutterBottom>
-        Welcome {user?.username || ""}!
+        Welcome {username || ""}!
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
